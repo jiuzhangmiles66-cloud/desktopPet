@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        /* 2. 解决透明：网页本身的背景也要透明 */
+        body {
+            background-color: transparent !important;
+            margin: 0; padding: 20px;
+            font-family: 'Segoe UI', sans-serif;
+            user-select: none; /* 禁止鼠标选中文字，看起来更像原生软件 */
+            display: flex; flex-direction: column; align-items: center;
+        }
+        .bubble {
+            background: rgba(255, 255, 255, 0.95);
+            border: 2px solid #ffd700; border-radius: 15px;
+            padding: 10px; margin-bottom: 10px; width: 200px; min-height: 20px;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+        }
+        #cat-img { width: 150px; cursor: grab; }
+        #cat-img:active { cursor: grabbing; } /* 点下去变小手 */
+        
+        /* 新增：画一个漂亮的输入框区域 */
+        .input-area { margin-top: 10px; display: flex; gap: 5px; }
+        input { border-radius: 10px; border: 1px solid #ccc; padding: 5px; outline: none; }
+        button { border-radius: 10px; border: none; background: #ffd700; padding: 5px 10px; cursor: pointer; }
+
+        /* 小球的基础样式：圆形、渐变色、光晕 */
+.orb {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%; /* 50% 变圆 */
+    cursor: grab;
+    transition: all 0.5s ease; /* 状态切换时平滑过渡 */
+    margin: 20px 0;
+}
+
+/* 状态 1：待机状态 (蓝绿色，缓慢呼吸) */
+.state-idle {
+    background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
+    animation: breathe 4s ease-in-out infinite; /* 4秒一次深呼吸 */
+}
+
+/* 状态 2：思考状态 (紫粉色，快速闪烁) */
+.state-thinking {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    animation: pulse 1s ease-in-out infinite; /* 1秒一次快速跳动 */
+}
+
+/* 状态 3：休眠状态 (暗灰色，极暗的光) */
+.state-sleep {
+    background: linear-gradient(135deg, #434343 0%, #000000 100%);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+    animation: none; /* 睡觉时不发光 */
+    transform: scale(0.8); /* 睡觉时缩成一团 */
+}
+
+/* --- 核心动画引擎 --- */
+
+/* 待机呼吸动画 */
+@keyframes breathe {
+    0%, 100% { 
+        transform: scale(1); 
+        box-shadow: 0 0 20px #00f2fe, inset 0 0 20px rgba(255,255,255,0.5); 
+    }
+    50% { 
+        transform: scale(1.05); /* 微微放大 */
+        box-shadow: 0 0 40px #00f2fe, 0 0 20px #4facfe, inset 0 0 30px rgba(255,255,255,0.8); /* 光晕扩散 */
+    }
+}
+
+/* 思考跳动动画 */
+@keyframes pulse {
+    0%, 100% { transform: scale(1); box-shadow: 0 0 30px #f093fb; }
+    50% { transform: scale(1.1); box-shadow: 0 0 60px #f5576c; }
+}
+    </style>
+</head>
+<body>
+    <div class="bubble" id="chat-bubble">你好，主人！</div>
+    
+    <div id="ai-orb" class="orb state-idle" onmousedown="startDrag(event)" onmousemove="doDrag(event)"></div>
+    
+    <div class="input-area">
+        <input type="text" id="userInput" placeholder="跟助手说点什么...">
+        <button onclick="sendMsg()">发送</button>
+    </div>
+
+    <script>
+        // --- 逻辑区 ---
+        
+        // 触发对话
+        function sendMsg() {
+        let text = document.getElementById('userInput').value;
+        if(!text) return;
+        
+        // 1. 气泡文字变成思考中
+        document.getElementById('chat-bubble').innerText = "AI 思考中...";
+        
+        // 2. 【新逻辑】把小球切换到“思考状态”（紫粉色快闪）
+        document.getElementById('ai-orb').className = "orb state-thinking";
+        
+        // 3. 调用 Java 去问本地的 Qwen 模型
+        if(window.app) {
+            window.app.chat(text); 
+        }
+        
+        // 4. 清空输入框
+        document.getElementById('userInput').value = ''; 
+    }
+
+        // 提供给 Java 调用的：更新文字
+        function updateMessage(text) {
+        // 1. 把 AI 的回复显示在气泡里
+        document.getElementById('chat-bubble').innerText = text;
+        
+        // 2. 【新逻辑】把小球切回“待机状态”（蓝绿色呼吸）
+        document.getElementById('ai-orb').className = "orb state-idle"; 
+    }
+
+        // 拖动窗口的逻辑（前端计算，指挥后端移动）
+        let isDragging = false;
+        function startDrag(e) {
+            isDragging = true;
+            if(window.app) window.app.setOffset(e.screenX, e.screenY);
+        }
+        function doDrag(e) {
+            if (e.buttons !== 1) isDragging = false; // 如果鼠标没按住就取消
+            if (isDragging && window.app) {
+                window.app.dragWindow(e.screenX, e.screenY);
+            }
+        }
+        document.addEventListener('mouseup', () => isDragging = false);
+    </script>
+</body>
+</html>
