@@ -45,7 +45,7 @@ public class PrimaryController {
         });
     }
 
-    // --- 下面两个方法是用来接收网页传来的鼠标坐标，移动外层窗口的 ---
+    // --- 用来接收网页传来的鼠标坐标，移动外层窗口 ---
     public void setOffset(double x, double y) {
         Stage stage = (Stage) webView.getScene().getWindow();
         xOffset = x - stage.getX();

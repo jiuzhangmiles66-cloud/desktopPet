@@ -44,8 +44,7 @@ public class App extends Application {
         // 5. 将场景放入舞台并展示
         stage.setScene(scene);
         stage.show();
-        
-        // 提示：作为 CSE 学生，你可以观察控制台输出，确保没有初始化报错
+    
         System.out.println(">>> 金渐层已在桌面就绪！");
     }
 
@@ -60,12 +59,9 @@ public class App extends Application {
 
     public static void main(String[] args) {
         try {
-            // 这行代码相当于你在命令行手动输入 ollama run llama3.2:3b
-            // .start() 会在后台运行，不影响你的 Java 窗口打开
             new ProcessBuilder("ollama", "run", "qwen2.5:7b").start();
             System.out.println(">>> 成功唤醒金渐层的大脑 (Llama 3.2)");
         } catch (Exception e) {
-            // 如果你还没装 Ollama，它会打印这个提示
             System.out.println(">>> 无法自动唤醒大脑，请确保 Ollama 已安装并开启");
         }
         launch();
