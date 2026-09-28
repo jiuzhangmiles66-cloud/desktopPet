@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            background-color: transparent !important;
+            margin: 0;
+            padding: 20px;
+            font-family: 'Segoe UI', sans-serif;
+            user-select: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .bubble {
+            background: rgba(255, 255, 255, 0.95);
+            border: 2px solid #ffd700;
+            border-radius: 15px;
+            padding: 10px;
+            margin-bottom: 10px;
+            width: 200px;
+            min-height: 20px;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        #cat-img {
+            width: 150px;
+            cursor: grab;
+        }
+
+        #cat-img:active {
+            cursor: grabbing;
+        }
+
+        .input-area {
+            margin-top: 10px;
+            display: flex;
+            gap: 5px;
+        }
+
+        input {
+            border-radius: 10px;
+            border: 1px solid #ccc;
+            padding: 5px;
+            outline: none;
+        }
+
+        button {
+            border-radius: 10px;
+            border: none;
+            background: #ffd700;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+
+        .orb {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            cursor: grab;
+            transition: all 0.5s ease;
+            margin: 20px 0;
+        }
+
+        .state-idle {
+            background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
+            animation: breathe 4s ease-in-out infinite;
+        }
+
+        .state-thinking {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            animation: pulse 1s ease-in-out infinite;
+        }
+
+        .state-sleep {
+            background: linear-gradient(135deg, #434343 0%, #000000 100%);
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+            animation: none;
+            transform: scale(0.8);
+        }
+
+        @keyframes breathe {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 0 20px #00f2fe,
+                            inset 0 0 20px rgba(255, 255, 255, 0.5);
+            }
+
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 0 40px #00f2fe,
+                            0 0 20px #4facfe,
+                            inset 0 0 30px rgba(255, 255, 255, 0.8);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 0 30px #f093fb;
+            }
+
+            50% {
+                transform: scale(1.1);
+                box-shadow: 0 0 60px #f5576c;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bubble" id="chat-bubble">Hello!</div>
+
+    <div
+        id="ai-orb"
+        class="orb state-idle"
+    ></div>
+
+    <div class="input-area">
+        <input type="text" id="userInput" placeholder="Say something to assistant...">
+        <button onclick="sendMsg()">sendMsg</button>
+    </div>
+
+    <script>
+        function sendMsg() {
+            let text = document.getElementById('userInput').value;
+            if (!text) return;
+
+            document.getElementById('chat-bubble').innerText = "Thinking...";
+            document.getElementById('ai-orb').className = "orb state-thinking";
+
+            if (window.app) {
+                window.app.chat(text);
+            }
+
+            document.getElementById('userInput').value = '';
+        }
+
+        function updateMessage(text) {
+            document.getElementById('chat-bubble').innerText = text;
+            document.getElementById('ai-orb').className = "orb state-idle";
+        }
+
+    </script>
+</body>
+</html>

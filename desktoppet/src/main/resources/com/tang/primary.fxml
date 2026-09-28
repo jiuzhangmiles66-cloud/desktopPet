@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.web.WebView?>
+
+<StackPane style="-fx-background-color: transparent;" 
+           xmlns="http://javafx.com/javafx/8" 
+           xmlns:fx="http://javafx.com/fxml/1" 
+           fx:controller="com.tang.PrimaryController">
+   <children>
+      <WebView fx:id="webView" prefHeight="550.0" prefWidth="300.0" style="-fx-background-color: transparent;"/>
+   </children>
+</StackPane>
